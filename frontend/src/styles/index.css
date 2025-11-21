@@ -43,17 +43,21 @@ body {
   display: flex;
   flex-direction: column;
   padding: 3rem;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 30%), url("../assets/maharashtra.png") no-repeat top center;
+  background-size: 100% auto;
 }
 #home .hero-section {
+  margin: 12rem 0 3rem;
   padding: 3rem 0;
 }
 #home .hero-section h1 {
   color: #1565C0;
-  font-size: 3rem;
+  font-size: 5rem;
   margin-bottom: 1rem;
 }
 #home .hero-section p {
   width: 50%;
+  font-size: 1.2rem;
 }
 #home .kpi-section {
   margin-bottom: 2rem;
@@ -62,6 +66,13 @@ body {
   align-items: center;
   justify-content: flex-start;
   gap: 2rem;
+}
+#home .kpi-section .kpi h3 {
+  color: #0097A7;
+  font-size: 1.5rem;
+}
+#home .kpi-section .kpi p {
+  font-size: 1.5rem;
 }
 #home .charts .chart {
   margin-bottom: 3rem;
@@ -106,18 +117,83 @@ body {
   height: 80vh;
 }
 
-#file-complaints {
+#complaints-list {
+  display: flex;
+  flex-direction: column;
+}
+#complaints-list .filters {
+  margin: 1rem;
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+}
+#complaints-list .filters .select-filters {
+  flex: 1 1 calc(50% - 1rem);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+}
+#complaints-list .filters .select-filters .filter {
+  flex: 1 1 calc(50% - 1rem);
+  border: none;
+  z-index: inherit;
+}
+#complaints-list .filters input {
+  flex: 1 1 calc(50% - 1rem);
+  font-size: 1rem;
+  outline: none;
+  border: none;
+  border-bottom: 2px solid #1565C0;
+}
+#complaints-list p {
+  margin: 1rem;
+}
+#complaints-list .complaints-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  overflow-x: auto;
+}
+#complaints-list .complaints-grid .grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #ddd;
+}
+#complaints-list .complaints-grid .complaints-header {
+  font-weight: bold;
+  background-color: #f5f5f5;
+}
+#complaints-list .complaints-grid .complaint-row:hover {
+  background-color: #fafafa;
+}
+#complaints-list .pagination {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+}
+#complaints-list .pagination button {
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+#file-complaint {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-#file-complaints .complaint-form {
+#file-complaint .complaint-form {
   margin: 2rem 2rem;
   padding: 2rem 2rem 1rem;
   width: 96%;
   border-radius: 5px;
 }
-#file-complaints .complaint-form .row {
+#file-complaint .complaint-form .row {
   width: 100%;
   margin-bottom: 1rem;
   display: flex;
@@ -126,11 +202,11 @@ body {
   align-items: center;
   flex-wrap: wrap;
 }
-#file-complaints .complaint-form .row .input-field {
+#file-complaint .complaint-form .row .input-field {
   flex: 1 1 calc(50% - 1rem);
 }
-#file-complaints .complaint-form .row .input-field input,
-#file-complaints .complaint-form .row .input-field textarea {
+#file-complaint .complaint-form .row .input-field input,
+#file-complaint .complaint-form .row .input-field textarea {
   width: 100%;
   padding: 0.5rem;
   outline: none;
@@ -138,36 +214,35 @@ body {
   border-bottom: 1px solid #000000;
   font-size: 1.2rem;
 }
-#file-complaints .complaint-form .row .input-field input:hover, #file-complaints .complaint-form .row .input-field input:active, #file-complaints .complaint-form .row .input-field input:focus,
-#file-complaints .complaint-form .row .input-field textarea:hover,
-#file-complaints .complaint-form .row .input-field textarea:active,
-#file-complaints .complaint-form .row .input-field textarea:focus {
+#file-complaint .complaint-form .row .input-field input:hover, #file-complaint .complaint-form .row .input-field input:active, #file-complaint .complaint-form .row .input-field input:focus,
+#file-complaint .complaint-form .row .input-field textarea:hover,
+#file-complaint .complaint-form .row .input-field textarea:active,
+#file-complaint .complaint-form .row .input-field textarea:focus {
   border-color: #1E88E5;
 }
-#file-complaints .complaint-form .row .input-field input:disabled,
-#file-complaints .complaint-form .row .input-field textarea:disabled {
+#file-complaint .complaint-form .row .input-field input:disabled,
+#file-complaint .complaint-form .row .input-field textarea:disabled {
   cursor: not-allowed !important;
   opacity: 0.6;
 }
-#file-complaints .complaint-form .row .input-field .options {
+#file-complaint .complaint-form .row .input-field .options {
   width: 100%;
 }
-#file-complaints .complaint-form .row button {
+#file-complaint .complaint-form .row button {
   flex: 1 1 calc(50% - 1rem);
-  font-size: 1rem;
+  font-size: 1.2rem;
   font-weight: 500;
   margin-top: 1rem;
   padding: 0.5rem;
   border-radius: 5px;
-  border: 1px solid #000000;
+  border: none;
   cursor: pointer;
 }
-#file-complaints .complaint-form .row button:nth-child(2) {
+#file-complaint .complaint-form .row button:nth-child(2) {
   color: #ffffff;
   background-color: #1E88E5;
-  border: 1px solid #1565C0;
 }
-#file-complaints .complaint-form .row button:disabled {
+#file-complaint .complaint-form .row button:disabled {
   cursor: not-allowed !important;
   opacity: 0.6;
 }
