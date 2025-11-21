@@ -9,26 +9,9 @@ api_hospitals = Blueprint("hospitals", __name__, url_prefix="/api/hospitals")
 def serialize_hospital(h):
     return {
         **h.to_dict(),
-        "state": (
-            {
-                "state_id": h.state.state_id,
-                "state_name": h.state.state_name,
-                "latitude": h.state.latitude,
-                "longitude": h.state.longitude,
-            } if h.state else None
-        ),
-        "district": (
-            {
-                "district_id": h.district.district_id,
-                "district_name": h.district.district_name,
-                "state_id": h.district.state_id,
-                "latitude": h.district.latitude,
-                "longitude": h.district.longitude,
-            } if h.district else None
-        ),
-        "categories": [
-            {"category_id": c.category_id, "category_name": c.category_name} for c in (h.categories or [])
-        ],
+        "state": h.state.to_dict() if h.state else None,
+        "district": h.district.to_dict() if h.district else None,
+        "categories": [c.to_dict() for c in (h.categories or [])],
     }
 
 
@@ -107,95 +90,84 @@ def get_hospitals():
 
 # GET /api/hospitals/grouped
 # Return hospitals grouped hierarchically: state → districts → hospitals.
+# Ensures states and districts appear even when no hospitals exist in that district.
 # Query:
-#   - state_id    (int, optional): State to group within.
-#   - district_id (int, optional): If provided, restrict results to this district.
+#   - state_id    (int, optional): If omitted, include all states.
+#   - district_id (int, optional): Restrict to this district (optional).
 @api_hospitals.route("/grouped/", methods=["GET"])
 def get_grouped_hospitals():
-
-    state_id = request.args.get("state_id", type=int) # defailt None
+    state_id = request.args.get("state_id", type=int)
     district_id = request.args.get("district_id", type=int)
 
-    # Efficient preloading of relationships
-    query = (
+    # Fetch all states (apply filter if state_id provided)
+    state_query = State.query
+    if state_id:
+        state_query = state_query.filter(State.state_id == state_id)
+
+    states = state_query.order_by(State.state_name).all()
+
+    if not states:
+        return jsonify({"message": "No states found", "count": 0, "data": []}), 404
+
+    # Fetch all districts for the selected states (apply filters if given)
+    district_query = District.query
+    if state_id:
+        district_query = district_query.filter(District.state_id == state_id)
+    if district_id:
+        district_query = district_query.filter(District.district_id == district_id)
+
+    districts = district_query.order_by(District.district_name).all()
+
+    # Fetch hospitals joined with state and district (filtered if specified)
+    hospital_query = (
         Hospital.query
         .options(
-            joinedload(Hospital.state),
-            joinedload(Hospital.district)
+            joinedload(Hospital.state).undefer('*'),
+            joinedload(Hospital.district).undefer('*')
         )
-        .order_by(Hospital.district_id, Hospital.state_id, Hospital.hospital_name)
+        .order_by(Hospital.hospital_name)
     )
 
-    if state_id is not None:
-        query = query.filter(Hospital.state_id == state_id)
+    if state_id:
+        hospital_query = hospital_query.filter(Hospital.state_id == state_id)
+    if district_id:
+        hospital_query = hospital_query.filter(Hospital.district_id == district_id)
 
-    if district_id is not None:
-        query = query.filter(Hospital.district_id == district_id)
+    hospitals = hospital_query.all()
 
-    hospitals = query.all()
-    if not hospitals:
-        msg = f"No hospitals found, "
-        if state_id:
-            msg += f", state_id {state_id}"
-        if district_id:
-            msg += f", district_id {district_id}"
-        return jsonify({"message": msg, "count": 0, "data": []}), 404
-
-    # Build hierarchy: state → districts → hospitals
-    state_map = {}
-
-    for h in hospitals:
-        if not h.state:
-            continue
-
-        state_id = h.state.state_id
-        district_id_val = h.district.district_id if h.district else None
-
-        # State
-        if state_id not in state_map:
-            state_map[state_id] = {
-                "state_id": h.state.state_id,
-                "state_name": h.state.state_name,
-                "latitude": h.state.latitude,
-                "longitude": h.state.longitude,
-                "districts": {}
-            }
-
-        state_entry = state_map[state_id]
-
-        # District
-        if district_id_val and district_id_val not in state_entry["districts"]:
-            state_entry["districts"][district_id_val] = {
-                "district_id": h.district.district_id,
-                "district_name": h.district.district_name,
-                "hospitals": []
-            }
-
-        # Hospital
-        hospital_data = {
-            "hospital_id": h.hospital_id,
-            "hospital_name": h.hospital_name,
-            "address": h.address,
-            "pincode": h.pincode,
-            "latitude": h.latitude,
-            "longitude": h.longitude,
-            "total_beds": h.total_beds,
-            "hospital_type": h.hospital_type,
-            "government_subtype": h.government_subtype
+    # Initialize state map
+    state_map = {
+        s.state_id: {
+            **s.to_dict(),
+            "districts": {}
         }
+        for s in states
+    }
 
-        if district_id_val:
-            state_entry["districts"][district_id_val]["hospitals"].append(hospital_data)
-            if state_entry["districts"][district_id_val].get("count", None):
-                state_entry["districts"][district_id_val]["count"] += 1
-            else:
-                state_entry["districts"][district_id_val]["count"] = 1
+    # Initialize district entries for each state even if no hospitals exist
+    for d in districts:
+        if d.state_id in state_map:
+            state_map[d.state_id]["districts"][d.district_id] = {
+                **d.to_dict(),
+                "hospitals": [],
+                "count": 0
+            }
 
-    # Convert dicts to lists
+    # Assign hospitals to correct district
+    for h in hospitals:
+        s_id = h.state_id
+        d_id = h.district_id
+
+        if s_id in state_map and d_id in state_map[s_id]["districts"]:
+            entry = state_map[s_id]["districts"][d_id]
+            entry["hospitals"].append(h.to_dict())
+            entry["count"] += 1
+
+    # Convert dicts to lists and add district counts
     result = []
-    for state in state_map.values():
-        state["districts"] = list(state["districts"].values())
-        state["count"] = len(state["districts"])
-        result.append(state)
+    for s in state_map.values():
+        s["districts"] = list(s["districts"].values())
+        s["count"] = len(s["districts"])
+        result.append(s)
 
     return jsonify({"count": len(result), "data": result}), 200
