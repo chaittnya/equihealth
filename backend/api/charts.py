@@ -180,23 +180,42 @@ def state_district_hospitals_vs_population():
     population = [r.population or 0 for r in rows]
     num_hospitals = [r.num_hospitals for r in rows]
 
-    fig, ax = plt.subplots(figsize=(10, 7))
+    fig, ax = plt.subplots(figsize=(12, 7))
     ax.scatter(population, num_hospitals)
-
-    # optional: show district names (small, rotated)
-    for name, x, y in zip(districts, population, num_hospitals):
-        ax.annotate(
-            name,
-            (x, y),
-            textcoords="offset points",
-            xytext=(3, 3),
-            fontsize=7,
-        )
 
     ax.set_xlabel("Population")
     ax.set_ylabel("Number of hospitals")
     ax.set_title(f"Hospitals vs population by district (state_id={state_id})")
+    placed_labels = []
+
+    if population:
+        x_min, x_max = min(population), max(population)
+        y_min, y_max = min(num_hospitals), max(num_hospitals)
+        x_range = max(x_max - x_min, 1)
+        y_range = max(y_max - y_min, 1)
+        x_tol = 0.03 * x_range
+        y_tol = 0.03 * y_range
+
+        for name, x, y in zip(districts, population, num_hospitals):
+            too_close = False
+            for (px, py) in placed_labels:
+                if abs(x - px) < x_tol and abs(y - py) < y_tol:
+                    too_close = True
+                    break
+
+            if too_close:
+                continue
+
+            ax.annotate(
+                name,
+                (x, y),
+                textcoords="offset points",
+                xytext=(3, 3),
+                fontsize=7,
+            )
+            placed_labels.append((x, y))
 
     fig.tight_layout()
     return fig_to_png_response(fig)
+
 
