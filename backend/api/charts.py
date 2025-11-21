@@ -13,8 +13,7 @@ from sqlalchemy import func
 
 api_charts = Blueprint("api_charts", __name__, url_prefix="/api/charts")
 
-# Convert a Matplotlib figure to a Flask Response (image/png),
-# without saving to disk.
+# Returns PNG response from Matplotlib figure
 def fig_to_png_response(fig):
     buf = BytesIO()
     fig.savefig(buf, format="png", bbox_inches="tight")
@@ -22,6 +21,7 @@ def fig_to_png_response(fig):
     buf.seek(0)
     return send_file(buf, mimetype="image/png")
 
+# Validate a color string (name or hex), return RGBA or None
 def validate_color(color):
     if not color:
         return None
@@ -32,18 +32,22 @@ def validate_color(color):
     except ValueError:
         return None
 
+# Get main plot color from ?color= param (default=blue)
 def get_color(default="blue"):
     color = request.args.get("color")
     return validate_color(color) or default
 
+# Get text color from ?text_color= param (default=black)
 def get_text_color(default="black"):
     color = request.args.get("text_color")
     return validate_color(color) or default
 
+# Get background color from ?bg_color= param (default=white)
 def get_bg_color(default="white"):
     color = request.args.get("bg_color")
     return validate_color(color) or default
 
+# Get figure size using ?w= & ?h= params (default=(12,7))
 def get_figsize(default=(12, 7)):
     w = request.args.get("w")
     h = request.args.get("h")
@@ -52,8 +56,9 @@ def get_figsize(default=(12, 7)):
     return default
 
 
-# 1) Histogram of number of beds per hospital
-# GET /api/charts/beds
+# GET /api/charts/beds  
+# Histogram of beds per hospital
+# Params: w,h,color,text_color,bg_color
 @api_charts.route("/beds", methods=["GET"])
 def beds():
     rows = (
@@ -87,6 +92,9 @@ def beds():
     return fig_to_png_response(fig)
 
 
+# GET /api/charts/state-district-hospitals  
+# Hospitals per district
+# Params: state_id (required), w,h,color,text_color,bg_color
 @api_charts.route("/state-district-hospitals", methods=["GET"])
 def state_district_hospitals():
     state_id = request.args.get("state_id", type=int)
@@ -138,6 +146,9 @@ def state_district_hospitals():
     return fig_to_png_response(fig)
 
 
+# GET /api/charts/state-district-beds  
+# Total beds per district
+# Params: state_id (required), w,h,color,text_color,bg_color
 @api_charts.route("/state-district-beds", methods=["GET"])
 def state_district_beds():
     state_id = request.args.get("state_id", type=int)
@@ -188,6 +199,9 @@ def state_district_beds():
     return fig_to_png_response(fig)
 
 
+# GET /api/charts/state-district-population  
+# Population per district
+# Params: state_id (required), w,h,color,text_color,bg_color
 @api_charts.route("/state-district-population", methods=["GET"])
 def state_district_population():
     state_id = request.args.get("state_id", type=int)
@@ -236,6 +250,9 @@ def state_district_population():
     return fig_to_png_response(fig)
 
 
+# GET /api/charts/state-district-hospitals-vs-population  
+# Scatter plot
+# Params: state_id (required), w,h,color,text_color,bg_color
 @api_charts.route("/state-district-hospitals-vs-population", methods=["GET"])
 def state_district_hospitals_vs_population():
     state_id = request.args.get("state_id", type=int)
@@ -313,6 +330,9 @@ def state_district_hospitals_vs_population():
     return fig_to_png_response(fig)
 
 
+# GET /api/charts/state-district-bed-ratio  
+# Beds per 10k population
+# Params: state_id (required), w,h,color,text_color,bg_color
 @api_charts.route("/state-district-bed-ratio", methods=["GET"])
 def state_district_bed_ratio():
     state_id = request.args.get("state_id", type=int)
