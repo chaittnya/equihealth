@@ -99,8 +99,11 @@ const MapZoomController = ({ selected }) => {
 };
 
 const Map = ({ selected }) => {
-  const { districts, hospitals } = useSelector((state) => state.healthInfra);
+  const { districts, hospitals, loaded } = useSelector((state) => state.healthInfra);
   const [zoom, setZoom] = useState(DEFAULT_ZOOM);
+
+  if (!loaded) return <p>Loading map...</p>;
+  if (!hospitals.allIds.length) return <p>No hospital data available</p>;
 
   const hospitalList = hospitals.allIds.map((id) => hospitals.byId[id]);
 

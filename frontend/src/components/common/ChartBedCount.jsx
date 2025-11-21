@@ -11,20 +11,22 @@ import {
 } from "recharts";
 
 const ChartBedCount = () => {
-  const districts = useSelector((state) => state.healthInfra.districts);
-  const hospitals = useSelector((state) => state.healthInfra.hospitals);
+  const { districts, hospitals, loaded } = useSelector((state) => state.healthInfra);
 
-  const data = districts.allIds.map((districtId) => {
+  if (!loaded) {
+    return <p>Loading chart...</p>;
+  }
+
+  if (!districts?.allIds?.length) {
+    return <p>No data available for this chart.</p>;
+  }
+
+  const data = (districts.allIds || []).map((districtId) => {
     const district = districts.byId[districtId];
-
-    const totalBeds = district.hospitals
+    const totalBeds = (district.hospitals || [])
       .map((hid) => hospitals.byId[hid]?.total_beds || 0)
       .reduce((a, b) => a + b, 0);
-
-    return {
-      name: district.district_name,
-      beds: totalBeds,
-    };
+    return { name: district.district_name, beds: totalBeds };
   });
 
   return (

@@ -11,8 +11,8 @@ import { setActivePage } from "../redux/features/activePageSlice";
 const Home = () => {
   const dispatch = useDispatch();
 
+  const { loaded } = useSelector((state) => state.healthInfra);
   const districts = useSelector((state) => state.healthInfra?.districts || {});
-
   const hospitals = useSelector((state) => state.healthInfra?.hospitals || {});
 
   useEffect(() => {
@@ -58,21 +58,28 @@ const Home = () => {
     <div id="home">
       <HeroSection />
       <div className="kpi-section">
-        <div className="kpi">
-          <h3>Total Hospitals</h3>
-          <p>{kpis.totalHospitals}</p>
-        </div>
-
-        <div className="kpi">
-          <h3>Total Beds</h3>
-          <p>{kpis.totalBeds}</p>
-        </div>
-
-        <div className="kpi">
-          <h3>Avg Beds per 10,000 People</h3>
-          <p>{kpis.avgBedsPer10k}</p>
-        </div>
+        {!loaded ? (
+          <p>Loading KPIs...</p>
+        ) : kpis ? (
+          <>
+            <div className="kpi">
+              <h3>Total Hospitals</h3>
+              <p>{kpis.totalHospitals}</p>
+            </div>
+            <div className="kpi">
+              <h3>Total Beds</h3>
+              <p>{kpis.totalBeds}</p>
+            </div>
+            <div className="kpi">
+              <h3>Avg Beds per 10,000 People</h3>
+              <p>{kpis.avgBedsPer10k}</p>
+            </div>
+          </>
+        ) : (
+          <p>No KPI data available</p>
+        )}
       </div>
+
       <div className="charts">
         <ChartHospitalCount />
         <ChartBedCount />
