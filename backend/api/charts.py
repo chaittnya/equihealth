@@ -81,3 +81,42 @@ def state_district_hospitals():
     fig.tight_layout()
     return fig_to_png_response(fig)
 
+@api_charts.route("/state-district-beds", methods=["GET"])
+def state_district_beds():
+    state_id = request.args.get("state_id", type=int)
+    if not state_id:
+        return jsonify({"error": "state_id is required"}), 400
+
+    rows = (
+        db.session.query(
+            District.district_name,
+            func.coalesce(func.sum(Hospital.total_beds), 0).label("total_beds")
+        )
+        .join(Hospital, Hospital.district_id == District.district_id)
+        .filter(District.state_id == state_id)
+        .group_by(District.district_name)
+        .order_by(District.district_name)
+        .all()
+    )
+
+    if not rows:
+        return jsonify({"error": "No data for given state_id"}), 404
+
+    districts = [r.district_name for r in rows]
+    total_beds = [r.total_beds for r in rows]
+
+    # horizontal bar chart for readability
+    y = range(len(districts))
+    fig, ax = plt.subplots(figsize=(12, 7))
+    ax.barh(y, total_beds)
+    ax.set_yticks(y)
+    ax.set_yticklabels(districts)
+    ax.invert_yaxis()  # highest at top
+    ax.set_xlabel("Total beds")
+    ax.set_title(f"Total hospital beds by district")
+
+    fig.tight_layout()
+    return fig_to_png_response(fig)
+
+
+
