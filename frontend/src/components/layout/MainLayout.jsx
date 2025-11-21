@@ -14,7 +14,7 @@ const MainLayout = () => {
 
   useEffect(() => {
     const fetchHospitalInfra = async () => {
-      const { res, err } = await hospitalsApi.getHospitalsGrouped();
+      const { res, err } = await hospitalsApi.getHospitalsGrouped({ stateId: 18 });
       if (res) dispatch(setHealthInfra(res));
       else if (err) console.log(err);
     };
