@@ -36,27 +36,15 @@ const selectStyles = {
 };
 
 const SelectFilters = ({ selected, setSelected }) => {
-  const { states, districts, hospitals } = useSelector(
-    (state) => state.healthInfra
-  );
+  const { districts, hospitals } = useSelector((state) => state.healthInfra);
 
-  const stateOptions = states.allIds.map((id) => {
-    const s = states.byId[id];
+  const districtOptions = districts.allIds.map((id) => {
+    const d = districts.byId[id];
     return {
-      value: s.state_id,
-      label: s.state_name,
+      value: d.district_id,
+      label: d.district_name,
     };
   });
-
-  const districtOptions = selected.state
-    ? states.byId[selected.state.value].districts.map((distId) => {
-        const d = districts.byId[distId];
-        return {
-          value: d.district_id,
-          label: d.district_name,
-        };
-      })
-    : [];
 
   const hospitalOptions = selected.district
     ? districts.byId[selected.district.value].hospitals.map((hId) => {
@@ -67,14 +55,6 @@ const SelectFilters = ({ selected, setSelected }) => {
         };
       })
     : [];
-
-  const handleStateChange = (option) => {
-    setSelected({
-      state: option,
-      district: null,
-      hospital: null,
-    });
-  };
 
   const handleDistrictChange = (option) => {
     setSelected((prev) => ({
@@ -96,20 +76,10 @@ const SelectFilters = ({ selected, setSelected }) => {
       <Select
         className="filter"
         styles={selectStyles}
-        value={selected.state}
-        options={stateOptions}
-        onChange={handleStateChange}
-        placeholder="Select State"
-        isClearable
-      />
-      <Select
-        className="filter"
-        styles={selectStyles}
         value={selected.district}
         options={districtOptions}
         onChange={handleDistrictChange}
         placeholder="Select District"
-        isDisabled={!selected.state}
         isClearable
       />
       <Select
