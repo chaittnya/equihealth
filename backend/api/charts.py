@@ -1,4 +1,4 @@
-from flask import Blueprint, send_file, request
+from flask import Blueprint, send_file, request, jsonify
 from io import BytesIO
 
 import matplotlib
@@ -36,8 +36,7 @@ def beds():
     fig, ax = plt.subplots(figsize=(6, 4))
     ax.hist(beds, bins=50)
     ax.set_title(
-        "Histogram plot of number of buckets as number of beds.\n"
-        "Counts the number of hospitals within that bucket of beds."
+        "Number of beds vs number of hospitals"
     )
     ax.set_xlabel("Number of beds")
     ax.set_ylabel("Number of hospitals")
@@ -81,6 +80,7 @@ def state_district_hospitals():
     fig.tight_layout()
     return fig_to_png_response(fig)
 
+
 @api_charts.route("/state-district-beds", methods=["GET"])
 def state_district_beds():
     state_id = request.args.get("state_id", type=int)
@@ -105,13 +105,12 @@ def state_district_beds():
     districts = [r.district_name for r in rows]
     total_beds = [r.total_beds for r in rows]
 
-    # horizontal bar chart for readability
     y = range(len(districts))
     fig, ax = plt.subplots(figsize=(12, 7))
     ax.barh(y, total_beds)
     ax.set_yticks(y)
     ax.set_yticklabels(districts)
-    ax.invert_yaxis()  # highest at top
+    ax.invert_yaxis()
     ax.set_xlabel("Total beds")
     ax.set_title(f"Total hospital beds by district")
 
@@ -219,3 +218,49 @@ def state_district_hospitals_vs_population():
     return fig_to_png_response(fig)
 
 
+@api_charts.route("/state-district-bed-ratio", methods=["GET"])
+def state_district_bed_ratio():
+    state_id = request.args.get("state_id", type=int)
+    if not state_id:
+        return jsonify({"error": "state_id is required"}), 400
+
+    rows = (
+        db.session.query(
+            District.district_name,
+            District.total_persons.label("population"),
+            func.coalesce(func.sum(Hospital.total_beds), 0).label("total_beds")
+        )
+        .join(Hospital, Hospital.district_id == District.district_id)
+        .filter(District.state_id == state_id)
+        .group_by(District.district_name, District.total_persons)
+        .order_by(District.district_name)
+        .all()
+    )
+
+    if not rows:
+        return jsonify({"error": "No data for given state_id"}), 404
+
+    districts = []
+    ratios = []
+
+    for r in rows:
+        pop = r.population or 0
+        beds = r.total_beds or 0
+        if pop > 0:
+            ratio = beds * 10000.0 / pop
+        else:
+            ratio = 0
+        districts.append(r.district_name)
+        ratios.append(ratio)
+
+    y = range(len(districts))
+    fig, ax = plt.subplots(figsize=(12, 7))
+    ax.barh(y, ratios)
+    ax.set_yticks(y)
+    ax.set_yticklabels(districts)
+    ax.invert_yaxis()
+    ax.set_xlabel("Beds per 10,000 people")
+    ax.set_title(f"Hospital bed availability ratio by district (state_id={state_id})")
+
+    fig.tight_layout()
+    return fig_to_png_response(fig)
