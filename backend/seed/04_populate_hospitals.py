@@ -10,7 +10,7 @@ from extensions import db
 from models import Hospital, State, District
 
 # --- Config ---
-CSV_FILE = "../../data/maharashtra/hospital.csv"
+CSV_FILE = "../data/maharashtra/hospital.csv"
 DEFAULT_STATE_NAME = "Maharashtra"  # change if importing another state
 
 

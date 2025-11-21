@@ -9,7 +9,7 @@ from app import app
 from extensions import db
 from models import Hospital, Category, State, hospital_category
 
-CSV_FILE = "../../data/maharashtra/hospital_category.csv"
+CSV_FILE = "../data/maharashtra/hospital_category.csv"
 DEFAULT_STATE_NAME = "Maharashtra"   # default for all hospitals in this file
 
 
