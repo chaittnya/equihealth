@@ -119,4 +119,36 @@ def state_district_beds():
     return fig_to_png_response(fig)
 
 
+@api_charts.route("/state-district-population", methods=["GET"])
+def state_district_population():
+    state_id = request.args.get("state_id", type=int)
+    if not state_id:
+        return jsonify({"error": "state_id is required"}), 400
 
+    rows = (
+        db.session.query(
+            District.district_name,
+            District.total_persons.label("population")
+        )
+        .filter(District.state_id == state_id)
+        .order_by(District.district_name)
+        .all()
+    )
+
+    if not rows:
+        return jsonify({"error": "No data for given state_id"}), 404
+
+    districts = [r.district_name for r in rows]
+    population = [r.population or 0 for r in rows]
+
+    y = range(len(districts))
+    fig, ax = plt.subplots(figsize=(12, 7))
+    ax.barh(y, population)
+    ax.set_yticks(y)
+    ax.set_yticklabels(districts)
+    ax.invert_yaxis()
+    ax.set_xlabel("Population")
+    ax.set_title(f"District population (state_id={state_id})")
+
+    fig.tight_layout()
+    return fig_to_png_response(fig)
