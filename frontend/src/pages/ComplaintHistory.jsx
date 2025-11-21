@@ -1,9 +1,16 @@
-import React from 'react'
+import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
+
+import { setActivePage } from "../redux/features/activePageSlice";
 
 const ComplaintHistory = () => {
-  return (
-    <div>ComplaintHistory</div>
-  )
-}
+  const dispatch = useDispatch();
 
-export default ComplaintHistory
+  useEffect(() => {
+    dispatch(setActivePage(2));
+  }, [dispatch]);
+
+  return <div id="complaints-list"></div>;
+};
+
+export default ComplaintHistory;
