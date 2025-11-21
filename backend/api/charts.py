@@ -5,6 +5,7 @@ import matplotlib
 import numpy as np
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 
 from extensions import db
 from models import State, District, Hospital
@@ -21,13 +22,34 @@ def fig_to_png_response(fig):
     buf.seek(0)
     return send_file(buf, mimetype="image/png")
 
-def get_color(default=None):
+def validate_color(color):
+    if not color:
+        return None
+    color = color.strip()
+    try:
+        rgba = mcolors.to_rgba(color)
+        return rgba
+    except ValueError:
+        return None
+
+def get_color(default="blue"):
     color = request.args.get("color")
-    return color or default
+    return validate_color(color) or default
 
 def get_text_color(default="black"):
     color = request.args.get("text_color")
-    return color or default
+    return validate_color(color) or default
+
+def get_bg_color(default="white"):
+    color = request.args.get("bg_color")
+    return validate_color(color) or default
+
+def get_figsize(default=(12, 7)):
+    w = request.args.get("w")
+    h = request.args.get("h")
+    if w and h:
+        return (int(w), int(h))
+    return default
 
 
 # 1) Histogram of number of beds per hospital
@@ -41,14 +63,18 @@ def beds():
     )
     beds = [r.total_beds for r in rows if r.total_beds is not None]
 
-    fig, ax = plt.subplots(figsize=(6, 4))
+    size = get_figsize()
+    fig, ax = plt.subplots(figsize=size)
 
     color = get_color()
     text_color = get_text_color()
-    if color:
-        ax.hist(beds, bins=50, color=color)
-    else:
-        ax.hist(beds, bins=50)
+    bg_color = get_bg_color()
+
+    if bg_color:
+        fig.patch.set_facecolor(bg_color)
+        ax.set_facecolor(bg_color)
+
+    ax.hist(beds, bins=50, color=color)
 
     ax.set_title(
         "Number of beds vs number of hospitals", color=text_color
@@ -86,14 +112,19 @@ def state_district_hospitals():
     num_hospitals = [r.num_hospitals for r in rows]
 
     y = range(len(districts))
-    fig, ax = plt.subplots(figsize=(12, 7))
+    size = get_figsize()
+    fig, ax = plt.subplots(figsize=size)
 
     color = get_color()
     text_color = get_text_color()
-    if color:
-        ax.barh(y, num_hospitals, color=color)
-    else:
-        ax.barh(y, num_hospitals)
+    bg_color = get_bg_color()
+
+    if bg_color:
+        fig.patch.set_facecolor(bg_color)
+        ax.set_facecolor(bg_color)
+
+    
+    ax.barh(y, num_hospitals, color=color)
 
     ax.set_yticks(y)
     ax.set_yticklabels(districts)
@@ -132,14 +163,18 @@ def state_district_beds():
     total_beds = [r.total_beds for r in rows]
 
     y = range(len(districts))
-    fig, ax = plt.subplots(figsize=(12, 7))
+    size = get_figsize()
+    fig, ax = plt.subplots(figsize=size)
 
+    bg_color = get_bg_color()
     color = get_color()
     text_color = get_text_color()
-    if color:
-        ax.barh(y, total_beds, color=color)
-    else:
-        ax.barh(y, total_beds)
+
+    if bg_color:
+        fig.patch.set_facecolor(bg_color)
+        ax.set_facecolor(bg_color)
+    
+    ax.barh(y, total_beds, color=color)
 
     ax.set_yticks(y)
     ax.set_yticklabels(districts)
@@ -176,14 +211,18 @@ def state_district_population():
     population = [r.population or 0 for r in rows]
 
     y = range(len(districts))
-    fig, ax = plt.subplots(figsize=(12, 7))
+    size = get_figsize()
+    fig, ax = plt.subplots(figsize=size)
 
+    bg_color = get_bg_color()
     color = get_color()
     text_color = get_text_color()
-    if color:
-        ax.barh(y, population, color=color)
-    else:
-        ax.barh(y, population) 
+
+    if bg_color:
+        fig.patch.set_facecolor(bg_color)
+        ax.set_facecolor(bg_color)
+
+    ax.barh(y, population, color=color)
 
     ax.set_yticks(y)
     ax.set_yticklabels(districts)
@@ -223,14 +262,18 @@ def state_district_hospitals_vs_population():
     population = [r.population or 0 for r in rows]
     num_hospitals = [r.num_hospitals for r in rows]
 
-    fig, ax = plt.subplots(figsize=(12, 7))
+    size = get_figsize()
+    fig, ax = plt.subplots(figsize=size)
 
+    bg_color = get_bg_color()
     color = get_color()
     text_color = get_text_color()
-    if color:
-        ax.scatter(population, num_hospitals, color=color)
-    else:
-        ax.scatter(population, num_hospitals) 
+
+    if bg_color:
+        fig.patch.set_facecolor(bg_color)
+        ax.set_facecolor(bg_color)
+
+    ax.scatter(population, num_hospitals, color=color)
 
     ax.set_xlabel("Population", color=text_color)
     ax.set_ylabel("Number of hospitals", color=text_color)
@@ -306,14 +349,18 @@ def state_district_bed_ratio():
         ratios.append(ratio)
 
     y = range(len(districts))
-    fig, ax = plt.subplots(figsize=(12, 7))
+    size = get_figsize()
+    fig, ax = plt.subplots(figsize=size)
 
+    bg_color = get_bg_color()
     color = get_color()
     text_color = get_text_color()
-    if color:
-        ax.barh(y, ratios, color=color)
-    else:
-        ax.barh(y, ratios)
+
+    if bg_color:
+        fig.patch.set_facecolor(bg_color)
+        ax.set_facecolor(bg_color)
+
+    ax.barh(y, ratios, color=color)
 
     ax.set_yticks(y)
     ax.set_yticklabels(districts)
