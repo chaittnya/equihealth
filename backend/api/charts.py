@@ -21,6 +21,14 @@ def fig_to_png_response(fig):
     buf.seek(0)
     return send_file(buf, mimetype="image/png")
 
+def get_color(default=None):
+    color = request.args.get("color")
+    return color or default
+
+def get_text_color(default="black"):
+    color = request.args.get("text_color")
+    return color or default
+
 
 # 1) Histogram of number of beds per hospital
 # GET /api/charts/beds
@@ -34,12 +42,21 @@ def beds():
     beds = [r.total_beds for r in rows if r.total_beds is not None]
 
     fig, ax = plt.subplots(figsize=(6, 4))
-    ax.hist(beds, bins=50)
+
+    color = get_color()
+    text_color = get_text_color()
+    if color:
+        ax.hist(beds, bins=50, color=color)
+    else:
+        ax.hist(beds, bins=50)
+
     ax.set_title(
-        "Number of beds vs number of hospitals"
+        "Number of beds vs number of hospitals", color=text_color
     )
-    ax.set_xlabel("Number of beds")
-    ax.set_ylabel("Number of hospitals")
+    ax.set_xlabel("Number of beds", color=text_color)
+    ax.set_ylabel("Number of hospitals", color=text_color)
+    plt.setp(ax.get_xticklabels(), color=text_color)
+    plt.setp(ax.get_yticklabels(), color=text_color)
 
     return fig_to_png_response(fig)
 
@@ -70,12 +87,21 @@ def state_district_hospitals():
 
     y = range(len(districts))
     fig, ax = plt.subplots(figsize=(12, 7))
-    ax.barh(y, num_hospitals)
+
+    color = get_color()
+    text_color = get_text_color()
+    if color:
+        ax.barh(y, num_hospitals, color=color)
+    else:
+        ax.barh(y, num_hospitals)
+
     ax.set_yticks(y)
     ax.set_yticklabels(districts)
     ax.invert_yaxis()
-    ax.set_xlabel("Number of hospitals")
-    ax.set_title(f"Number of hospitals by district")
+    ax.set_xlabel("Number of hospitals", color=text_color)
+    ax.set_title(f"Number of hospitals by district", color=text_color)
+    plt.setp(ax.get_xticklabels(), color=text_color)
+    plt.setp(ax.get_yticklabels(), color=text_color)
 
     fig.tight_layout()
     return fig_to_png_response(fig)
@@ -107,12 +133,21 @@ def state_district_beds():
 
     y = range(len(districts))
     fig, ax = plt.subplots(figsize=(12, 7))
-    ax.barh(y, total_beds)
+
+    color = get_color()
+    text_color = get_text_color()
+    if color:
+        ax.barh(y, total_beds, color=color)
+    else:
+        ax.barh(y, total_beds)
+
     ax.set_yticks(y)
     ax.set_yticklabels(districts)
     ax.invert_yaxis()
-    ax.set_xlabel("Total beds")
-    ax.set_title(f"Total hospital beds by district")
+    ax.set_xlabel("Total beds", color=text_color)
+    ax.set_title(f"Total hospital beds by district", color=text_color)
+    plt.setp(ax.get_xticklabels(), color=text_color)
+    plt.setp(ax.get_yticklabels(), color=text_color)
 
     fig.tight_layout()
     return fig_to_png_response(fig)
@@ -142,12 +177,21 @@ def state_district_population():
 
     y = range(len(districts))
     fig, ax = plt.subplots(figsize=(12, 7))
-    ax.barh(y, population)
+
+    color = get_color()
+    text_color = get_text_color()
+    if color:
+        ax.barh(y, population, color=color)
+    else:
+        ax.barh(y, population) 
+
     ax.set_yticks(y)
     ax.set_yticklabels(districts)
     ax.invert_yaxis()
-    ax.set_xlabel("Population")
-    ax.set_title(f"District population (state_id={state_id})")
+    ax.set_xlabel("Population", color=text_color)
+    ax.set_title(f"District population", color=text_color)
+    plt.setp(ax.get_xticklabels(), color=text_color)
+    plt.setp(ax.get_yticklabels(), color=text_color)
 
     fig.tight_layout()
     return fig_to_png_response(fig)
@@ -180,13 +224,21 @@ def state_district_hospitals_vs_population():
     num_hospitals = [r.num_hospitals for r in rows]
 
     fig, ax = plt.subplots(figsize=(12, 7))
-    ax.scatter(population, num_hospitals)
 
-    ax.set_xlabel("Population")
-    ax.set_ylabel("Number of hospitals")
-    ax.set_title(f"Hospitals vs population by district (state_id={state_id})")
+    color = get_color()
+    text_color = get_text_color()
+    if color:
+        ax.scatter(population, num_hospitals, color=color)
+    else:
+        ax.scatter(population, num_hospitals) 
+
+    ax.set_xlabel("Population", color=text_color)
+    ax.set_ylabel("Number of hospitals", color=text_color)
+    ax.set_title(f"Hospitals vs population by district", color=text_color)
+    plt.setp(ax.get_xticklabels(), color=text_color)
+    plt.setp(ax.get_yticklabels(), color=text_color)
+
     placed_labels = []
-
     if population:
         x_min, x_max = min(population), max(population)
         y_min, y_max = min(num_hospitals), max(num_hospitals)
@@ -255,12 +307,21 @@ def state_district_bed_ratio():
 
     y = range(len(districts))
     fig, ax = plt.subplots(figsize=(12, 7))
-    ax.barh(y, ratios)
+
+    color = get_color()
+    text_color = get_text_color()
+    if color:
+        ax.barh(y, ratios, color=color)
+    else:
+        ax.barh(y, ratios)
+
     ax.set_yticks(y)
     ax.set_yticklabels(districts)
     ax.invert_yaxis()
-    ax.set_xlabel("Beds per 10,000 people")
-    ax.set_title(f"Hospital bed availability ratio by district (state_id={state_id})")
+    ax.set_xlabel("Beds per 10,000 people", color=text_color)
+    ax.set_title(f"Hospital bed availability ratio by district", color=text_color)
+    plt.setp(ax.get_xticklabels(), color=text_color)
+    plt.setp(ax.get_yticklabels(), color=text_color)
 
     fig.tight_layout()
     return fig_to_png_response(fig)
