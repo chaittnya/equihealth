@@ -152,3 +152,51 @@ def state_district_population():
 
     fig.tight_layout()
     return fig_to_png_response(fig)
+
+
+@api_charts.route("/state-district-hospitals-vs-population", methods=["GET"])
+def state_district_hospitals_vs_population():
+    state_id = request.args.get("state_id", type=int)
+    if not state_id:
+        return jsonify({"error": "state_id is required"}), 400
+
+    rows = (
+        db.session.query(
+            District.district_name,
+            District.total_persons.label("population"),
+            func.count(Hospital.hospital_id).label("num_hospitals")
+        )
+        .join(Hospital, Hospital.district_id == District.district_id)
+        .filter(District.state_id == state_id)
+        .group_by(District.district_name, District.total_persons)
+        .order_by(District.district_name)
+        .all()
+    )
+
+    if not rows:
+        return jsonify({"error": "No data for given state_id"}), 404
+
+    districts = [r.district_name for r in rows]
+    population = [r.population or 0 for r in rows]
+    num_hospitals = [r.num_hospitals for r in rows]
+
+    fig, ax = plt.subplots(figsize=(10, 7))
+    ax.scatter(population, num_hospitals)
+
+    # optional: show district names (small, rotated)
+    for name, x, y in zip(districts, population, num_hospitals):
+        ax.annotate(
+            name,
+            (x, y),
+            textcoords="offset points",
+            xytext=(3, 3),
+            fontsize=7,
+        )
+
+    ax.set_xlabel("Population")
+    ax.set_ylabel("Number of hospitals")
+    ax.set_title(f"Hospitals vs population by district (state_id={state_id})")
+
+    fig.tight_layout()
+    return fig_to_png_response(fig)
+
