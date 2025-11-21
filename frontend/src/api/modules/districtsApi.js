@@ -5,7 +5,7 @@ const endpoints = {
 };
 
 const districtsApi = {
-  getDistricts: async ({ stateId }) => {
+  getDistricts: async ({ stateId } = {}) => {
     try {
       const params = {};
       if (stateId) params.state_id = stateId;

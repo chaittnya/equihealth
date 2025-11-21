@@ -13,7 +13,7 @@ const FileComplaint = () => {
   }, [dispatch]);
 
   return (
-    <div id="file-complaints">
+    <div id="file-complaint">
       <ComplaintForm />
     </div>
   );

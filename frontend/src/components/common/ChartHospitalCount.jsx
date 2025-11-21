@@ -11,9 +11,18 @@ import {
 } from "recharts";
 
 const ChartHospitalCount = () => {
+  const { loaded } = useSelector((state) => state.healthInfra);
   const districts = useSelector(
     (state) => state.healthInfra?.districts?.byId || {}
   );
+
+  if (!loaded) {
+    return <p>Loading chart...</p>;
+  }
+
+  if (!districts) {
+    return <p>No data available</p>;
+  }
 
   const data = Object.values(districts).map((d) => ({
     name: d.district_name,
