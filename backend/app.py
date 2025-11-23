@@ -13,11 +13,22 @@ from api.users import api_users
 from api.charts import api_charts
 
 app = Flask(__name__)
+
+
+@app.after_request
+def add_cors_headers(response):
+    response.headers["Access-Control-Allow-Origin"] = "https://equihealth-3.onrender.com"
+    response.headers["Access-Control-Allow-Credentials"] = "true"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
+    return response
+
 CORS(app, resources={
     r"/api/*": {
         "origins": "https://equihealth-3.onrender.com"
     }
 })
+
 app.config.from_object(Config)
 
 db.init_app(app)
