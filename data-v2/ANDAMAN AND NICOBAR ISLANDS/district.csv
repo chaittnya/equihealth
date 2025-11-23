@@ -1,0 +1,4 @@
+district_id,district,state_id,latitude,longitude,total_persons,total_males,total_females,children_persons,children_males,children_females
+645,NICOBARS,1,7.0,93.811,36842,20727,16115,4389,2256,2133
+646,NORTH  & MIDDLE ANDAMAN,1,13.2277143,92.9394925,105597,54861,50736,11828,5991,5837
+647,SOUTH ANDAMAN,1,10.7056905,92.4874679,238142,127283,110859,24661,12523,12138

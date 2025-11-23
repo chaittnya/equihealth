@@ -1,0 +1,6 @@
+hospital_id,hospital_name,address,district_id,pincode,latitude,longitude,mco_contact_number,total_beds,hospital_type
+1,Chakraborty Multi Speciality Hospital,"Near Dollygunj Junction, South Andaman, Andaman and Nicobar Islands, 744101",647.0,744101.0,11.6357989,92.7120575,03192 251971,,
+2,Inhs Dhanvantri,"Medical Board Office, South Andaman, Andaman and Nicobar Islands, 744101",647.0,744101.0,11.8311681,92.6586401,0,,
+3,Maricar Hospital,"Near Masjid, South Andaman, Andaman and Nicobar Islands, 744103",647.0,744103.0,11.8311681,92.6586401,03192 233434,,
+4,Pillar Health Centre,"Lamba Line, P.B. No. 526, South Andaman, Andaman and Nicobar Islands, 744103",647.0,744103.0,11.6498468,92.7294624,03192 233193,,
+5,"G B Pant Hospital, Port Blair","GB Pant Road, City Centre, Port Blair, South Andaman, Andaman and Nicobar Islands, 744103",647.0,744103.0,11.6233774,92.7264828,"03192 233665, 03192 246058, 03192 233455, 03192 230858",,

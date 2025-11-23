@@ -1,0 +1,11 @@
+hospital_id,hospital_name,address,district_id,pincode,latitude,longitude,mco_contact_number,total_beds,hospital_type
+1387,Assa Diagnostics and Nursing Home,"High Region, East Siang, Arunachal Pradesh, 791102",287.0,791102.0,28.1097051,95.1432068,368  2224509,,
+1388,"General Hospital, Pasighat","Pasighat, East Siang, Arunachal Pradesh, 791102",287.0,791102.0,28.1097051,95.1432068,0,,
+1389,Ramakrishna Mission Hospital,"P.O.- R.K.Mission, Itanagar, Lower Subansiri, Arunachal Pradesh, 791113",291.0,791113.0,27.0702523,93.5944001,"0360 2212761, 0360 2212762, 0360 2212263, 0360 2218780",,
+1390,Polo Hospital Pvt Ltd,"Rk Mission Road, Itanagar, Lower Subansiri, Arunachal Pradesh, 791113",291.0,791113.0,27.5326327,93.7823245,0360   2217651,,
+1391,Tara Memorial Hospital,"Nh 52 A, Papum Pare, Arunachal Pradesh, 791109",284.0,791109.0,27.1719019,93.7029002,"0360   2257183, 2258005,",,
+1392,"Arunachal State Hospital, Naharlagun","Naharlegun, Papum Pare, Arunachal Pradesh, 791110",284.0,791110.0,27.1719019,93.7029002,0,,
+1393,B T M Hospital,"Papu Nsmpum, Papum Pare, Arunachal Pradesh, 791110",284.0,791110.0,27.1719019,93.7029002,0,,
+1394,Boriatari Memorial Hospital,"Sapu Nalah, Papum Pare, Arunachal Pradesh, 791110",284.0,791110.0,27.1719019,93.7029002,0360   2246257,,
+1395,Tawang District Hospital,"District Medical officer, Tawang, Arunachal Pradesh, 790104",281.0,790104.0,-7.3416597,108.2244736,"03794 223092, 03794 222339",,
+1396,District Hospital,"District Hospital, Daporijo, Upper Subansiri, Arunachal Pradesh, 791122",285.0,791122.0,27.786802,94.3359635,03792 223276,,
