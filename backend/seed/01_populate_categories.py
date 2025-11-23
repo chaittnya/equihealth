@@ -9,7 +9,7 @@ from extensions import db
 from models import Category
 
 # Path to your CSV file
-CSV_FILE = "../../data/maharashtra/category.csv"
+CSV_FILE = "../data/maharashtra/category.csv"
 
 def populate_categories():
     with app.app_context():

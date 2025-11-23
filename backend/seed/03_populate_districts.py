@@ -10,7 +10,7 @@ from extensions import db
 from models import District, State
 
 # Path to your CSV file
-CSV_FILE = "../../data/maharashtra/district.csv"
+CSV_FILE = "../data/maharashtra/district.csv"
 DEFAULT_STATE_NAME = "Maharashtra" 
 
 def clean_str(value):

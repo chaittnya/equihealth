@@ -1,1 +1,296 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
 
+body {
+  font-family: "Roboto", sans-serif;
+  font-size: 16px;
+  color: #000000;
+  background-color: #ffffff;
+}
+
+#root {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex-grow: 1;
+}
+
+#navbar {
+  padding: 0.5rem 5rem;
+  background-color: #1E88E5;
+}
+#navbar ul {
+  list-style: none;
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+}
+#navbar ul li {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  color: #ffffff;
+  font-size: 1.2rem;
+}
+#navbar ul li a {
+  color: inherit;
+  text-decoration: none;
+}
+#navbar ul li:hover {
+  border-bottom: 3px solid rgba(255, 255, 255, 0.2);
+}
+#navbar ul .active {
+  font-weight: 600;
+  border-bottom: 3px solid #ffffff !important;
+}
+
+#home {
+  display: flex;
+  flex-direction: column;
+  padding: 3rem 3rem 0;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 30%), url("../assets/maharashtra.png") no-repeat top center;
+  background-size: 100% auto;
+}
+#home .hero-section {
+  margin: 12rem 0 3rem;
+  padding: 3rem 0;
+}
+#home .hero-section h1 {
+  color: #1565C0;
+  font-size: 5rem;
+  margin-bottom: 1rem;
+}
+#home .hero-section p {
+  width: 50%;
+  font-size: 1.2rem;
+}
+#home .kpi-section {
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 2rem;
+}
+#home .kpi-section .kpi h3 {
+  color: #0097A7;
+  font-size: 1.5rem;
+}
+#home .kpi-section .kpi p {
+  font-size: 1.5rem;
+}
+#home .charts .chart {
+  margin-bottom: 3rem;
+}
+#home .charts .chart .chart-title {
+  color: #1E88E5;
+}
+#home .charts .chart .chart-insights {
+  padding: 0 1rem;
+}
+#home .charts .chart .chart-insights ul {
+  margin-top: 1rem;
+  list-style: none;
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+}
+#home .charts .chart .chart-insights ul li {
+  padding: 1rem;
+  border-radius: 5px;
+  background-color: #eeeeee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#analytics-dashboard .select-filters {
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+}
+#analytics-dashboard .select-filters .filter {
+  width: 30% !important;
+  border: none !important;
+  z-index: inherit;
+}
+#analytics-dashboard .map {
+  margin: auto;
+  width: 96%;
+  height: 80vh;
+}
+
+#complaints-list {
+  display: flex;
+  flex-direction: column;
+}
+#complaints-list .filters {
+  margin: 1rem;
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+}
+#complaints-list .filters .select-filters {
+  flex: 1 1 calc(50% - 1rem);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+}
+#complaints-list .filters .select-filters .filter {
+  flex: 1 1 calc(50% - 1rem);
+  border: none;
+  z-index: inherit;
+}
+#complaints-list .filters input {
+  flex: 1 1 calc(50% - 1rem);
+  font-size: 1rem;
+  outline: none;
+  border: none;
+  border-bottom: 2px solid #1565C0;
+}
+#complaints-list p {
+  margin: 1rem;
+}
+#complaints-list .complaints-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  overflow-x: auto;
+}
+#complaints-list .complaints-grid .grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #ddd;
+}
+#complaints-list .complaints-grid .complaints-header {
+  font-weight: bold;
+  background-color: #f5f5f5;
+}
+#complaints-list .complaints-grid .complaint-row:hover {
+  background-color: #fafafa;
+}
+#complaints-list .pagination {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+}
+#complaints-list .pagination button {
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+#file-complaint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#file-complaint .complaint-form {
+  flex-grow: 1;
+  margin: 3rem auto;
+  padding: 2rem 2rem 1rem;
+  width: 90%;
+  border-radius: 5px;
+}
+#file-complaint .complaint-form .row {
+  width: 100%;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+#file-complaint .complaint-form .row .input-field {
+  flex: 1 1 calc(50% - 1rem);
+}
+#file-complaint .complaint-form .row .input-field input,
+#file-complaint .complaint-form .row .input-field textarea {
+  width: 100%;
+  padding: 0.5rem;
+  outline: none;
+  border: none;
+  border-bottom: 1px solid #000000;
+  font-size: 1.2rem;
+}
+#file-complaint .complaint-form .row .input-field input:hover, #file-complaint .complaint-form .row .input-field input:active, #file-complaint .complaint-form .row .input-field input:focus,
+#file-complaint .complaint-form .row .input-field textarea:hover,
+#file-complaint .complaint-form .row .input-field textarea:active,
+#file-complaint .complaint-form .row .input-field textarea:focus {
+  border-color: #1E88E5;
+}
+#file-complaint .complaint-form .row .input-field input:disabled,
+#file-complaint .complaint-form .row .input-field textarea:disabled {
+  cursor: not-allowed !important;
+  opacity: 0.6;
+}
+#file-complaint .complaint-form .row .input-field .options {
+  width: 100%;
+}
+#file-complaint .complaint-form .row button {
+  flex: 1 1 calc(50% - 1rem);
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin-top: 1rem;
+  padding: 0.6rem;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+}
+#file-complaint .complaint-form .row button:nth-child(2) {
+  color: #ffffff;
+  background-color: #1E88E5;
+}
+#file-complaint .complaint-form .row button:disabled {
+  cursor: not-allowed !important;
+  opacity: 0.6;
+}
+
+#footer {
+  margin-top: 2rem;
+  text-align: center;
+  padding: 0.5rem;
+  color: #ffffff;
+  background-color: #1565C0;
+}
+
+/* Utility */
+.paper {
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2), -2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.paper-1 {
+  box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.2), -2px 2px 3px rgba(0, 0, 0, 0.2);
+}
+
+.input-field {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.input-field input::placeholder,
+.input-field textarea::placeholder {
+  color: #000000;
+  opacity: 0.5;
+}
+.input-field .helper-text {
+  color: #E53935;
+  font-size: small;
+  text-align: left !important;
+  margin-top: 0.5%;
+  margin-left: 2%;
+  opacity: 0.5;
+}

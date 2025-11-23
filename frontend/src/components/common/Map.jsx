@@ -10,8 +10,8 @@ import {
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
-const DEFAULT_CENTER = [22.9734, 78.6569];
-const DEFAULT_ZOOM = 5;
+const DEFAULT_CENTER = [19.7515, 75.7139];
+const DEFAULT_ZOOM = 6;
 
 const ZoomHandler = ({ setZoom }) => {
   useMapEvents({
@@ -20,7 +20,7 @@ const ZoomHandler = ({ setZoom }) => {
   return null;
 };
 
-const aggregateBeds = (hospitals, key, districts, states) => {
+const aggregateBeds = (hospitals, key, districts) => {
   const map = {};
 
   hospitals.forEach((hosp) => {
@@ -30,18 +30,7 @@ const aggregateBeds = (hospitals, key, districts, states) => {
       name,
       population = 0;
 
-    if (key === "state") {
-      id = hosp.state_id;
-      const s = states.byId[id];
-      lat = s?.latitude;
-      lng = s?.longitude;
-      name = s?.state_name;
-
-      population = districts.allIds
-        .map((dId) => districts.byId[dId])
-        .filter((d) => d.state_id === id)
-        .reduce((acc, d) => acc + (d.total_persons || 0), 0);
-    } else if (key === "district") {
+    if (key === "district") {
       id = hosp.district_id;
       const d = districts.byId[id];
       lat = d?.latitude;
@@ -69,7 +58,7 @@ const aggregateBeds = (hospitals, key, districts, states) => {
     map[id].total_beds += hosp.total_beds || 0;
   });
 
-  if (key !== "hospital") {
+  if (key === "district") {
     Object.values(map).forEach((item) => {
       item.beds_per_1000 = item.population
         ? (item.total_beds / item.population) * 1000
@@ -82,9 +71,7 @@ const aggregateBeds = (hospitals, key, districts, states) => {
 
 const MapZoomController = ({ selected }) => {
   const map = useMap();
-  const { states, districts, hospitals } = useSelector(
-    (state) => state.healthInfra
-  );
+  const { districts, hospitals } = useSelector((state) => state.healthInfra);
 
   useEffect(() => {
     let lat, lng, zoom;
@@ -99,11 +86,6 @@ const MapZoomController = ({ selected }) => {
       lat = d?.latitude;
       lng = d?.longitude;
       zoom = 9;
-    } else if (selected?.state) {
-      const s = states.byId[selected.state.value];
-      lat = s?.latitude;
-      lng = s?.longitude;
-      zoom = 6;
     } else {
       lat = DEFAULT_CENTER[0];
       lng = DEFAULT_CENTER[1];
@@ -111,16 +93,17 @@ const MapZoomController = ({ selected }) => {
     }
 
     map.setView([lat, lng], zoom);
-  }, [selected, map, states, districts, hospitals]);
+  }, [selected, map, districts, hospitals]);
 
   return null;
 };
 
 const Map = ({ selected }) => {
-  const { states, districts, hospitals } = useSelector(
-    (state) => state.healthInfra
-  );
+  const { districts, hospitals, loaded } = useSelector((state) => state.healthInfra);
   const [zoom, setZoom] = useState(DEFAULT_ZOOM);
+
+  if (!loaded) return <p>Loading map...</p>;
+  if (!hospitals.allIds.length) return <p>No hospital data available</p>;
 
   const hospitalList = hospitals.allIds.map((id) => hospitals.byId[id]);
 
@@ -130,26 +113,20 @@ const Map = ({ selected }) => {
       return hospitalList.filter(
         (h) => h.district_id === selected.district.value
       );
-    if (selected?.state)
-      return hospitalList.filter((h) => h.state_id === selected.state.value);
     return hospitalList;
   }, [hospitalList, selected]);
 
   const displayData = useMemo(() => {
     if (selected.hospital)
-      return aggregateBeds(filteredHospitals, "hospital", districts, states);
-    if (zoom <= 5)
-      return aggregateBeds(filteredHospitals, "state", districts, states);
+      return aggregateBeds(filteredHospitals, "hospital", districts);
     if (zoom <= 8)
-      return aggregateBeds(filteredHospitals, "district", districts, states);
-    return aggregateBeds(filteredHospitals, "hospital", districts, states);
-  }, [filteredHospitals, zoom, selected, districts, states]);
+      return aggregateBeds(filteredHospitals, "district", districts);
+    return aggregateBeds(filteredHospitals, "hospital", districts);
+  }, [filteredHospitals, zoom, selected, districts]);
 
   const getRadius = (item) => {
-    if (item.beds_per_1000 !== undefined) {
-      if (zoom <= 5) return Math.max(10, item.beds_per_1000 * 4);
-      if (zoom <= 8) return Math.max(8, item.beds_per_1000 * 3);
-    }
+    if (item.beds_per_1000 !== undefined && zoom <= 8)
+      return Math.max(8, item.beds_per_1000 * 3);
     return Math.max(6, Math.sqrt(item.total_beds) * 0.5);
   };
 

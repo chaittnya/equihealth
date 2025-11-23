@@ -1,9 +1,22 @@
-import React from 'react'
+import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
+
+import ComplaintForm from "../components/common/ComplaintForm";
+
+import { setActivePage } from "../redux/features/activePageSlice";
 
 const FileComplaint = () => {
-  return (
-    <div>FileComplaint</div>
-  )
-}
+  const dispatch = useDispatch()
 
-export default FileComplaint
+  useEffect(() => {
+    dispatch(setActivePage(3));
+  }, [dispatch]);
+
+  return (
+    <div id="file-complaint">
+      <ComplaintForm />
+    </div>
+  );
+};
+
+export default FileComplaint;

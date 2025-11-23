@@ -1,9 +1,13 @@
-import React from 'react'
+import React from "react";
 
 const Footer = () => {
-  return (
-    <div>Footer</div>
-  )
-}
+  const year = new Date().getFullYear();
 
-export default Footer
+  return (
+    <footer id="footer">
+      <p>&copy; {year} EquiHealth. All rights reserved.</p>
+    </footer>
+  );
+};
+
+export default Footer;

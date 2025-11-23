@@ -8,23 +8,35 @@ const endpoints = {
 
 const complaintsApi = {
   postComplaint: async ({
+    firstName,
+    lastName,
     phoneNumber,
-    name,
+    email,
     stateId,
     districtId,
     hospitalId,
     title,
     details,
+    attachment,
   }) => {
     try {
-      const res = await client.post(endpoints.postComplaint, {
-        phoneNumber,
-        name,
-        stateId,
-        districtId,
-        hospitalId,
-        title,
-        details,
+      const formData = new FormData();
+      formData.append(
+        "name",
+        lastName ? `${firstName} ${lastName}` : firstName
+      );
+      formData.append("phone_number", phoneNumber);
+      formData.append("email", email);
+      formData.append("state_id", stateId);
+      formData.append("district_id", districtId);
+      formData.append("hospital_id", hospitalId);
+      formData.append("title", title);
+      formData.append("details", details);
+      if (attachment) formData.append("attachment", attachment);
+      const res = await client.post(endpoints.postComplaint, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
       return { res };
     } catch (err) {
