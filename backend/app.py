@@ -13,7 +13,11 @@ from api.users import api_users
 from api.charts import api_charts
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={
+    r"/api/*": {
+        "origins": "https://equihealth-3.onrender.com"
+    }
+})
 app.config.from_object(Config)
 
 db.init_app(app)
