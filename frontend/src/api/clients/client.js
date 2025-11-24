@@ -27,11 +27,13 @@ const client = axios.create({
 });
 
 client.interceptors.request.use(async (config) => {
+  const method = (config.method || "get").toLowerCase();
+  config.headers = config.headers || {};
+  if (["post", "put", "patch", "delete"].includes(method)) {
+    config.headers["Content-Type"] = "application/json";
+  }
   return {
     ...config,
-    headers: {
-      "Content-Type": "application/json",
-    },
   };
 });
 
