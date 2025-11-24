@@ -11,7 +11,7 @@ if (typeof window !== "undefined") {
 }
 
 // TEMP: log to verify what is actually used in the deployed app
-console.log("AXIOS BASE URL =>", baseURL);
+console.log("AXIOS BASE URL: ", baseURL);
 
 const client = axios.create({
   baseURL,

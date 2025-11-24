@@ -15,11 +15,7 @@ from api.charts import api_charts
 app = Flask(__name__)
 
 cors_host = os.environ.get("EQUIHEALTH_FRONTEND", 'http://localhost:5173')
-CORS(app, resources={
-    r"/*": {
-        "origins": "*"
-    }
-})
+CORS(app, origins="*")   
 
 app.config.from_object(Config)
 
