@@ -17,7 +17,7 @@ app = Flask(__name__)
 cors_host = os.environ.get("EQUIHEALTH_FRONTEND", 'http://localhost:5173')
 CORS(app, resources={
     r"/*": {
-        "origins": [cors_host]
+        "origins": "*"
     }
 })
 
